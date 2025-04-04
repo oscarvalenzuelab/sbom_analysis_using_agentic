@@ -1,0 +1,153 @@
+{
+  "name": "ToolDevsDev",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "component"
+            }
+          ]
+        }
+      },
+      "id": "f24a1cb2-5acb-49af-98af-ec8bbf048e22",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        100,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Query Devs.dev",
+        "height": 240,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        0
+      ],
+      "id": "9ba28721-a67e-4aba-8273-916935a0c7eb",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "license",
+              "value": "={{ $json.licenses }}"
+            },
+            {
+              "name": "purl",
+              "value": "={{ $('When Executed by Another Workflow').item.json.component }}"
+            },
+            {
+              "name": "vulnerabilities",
+              "value": "={{ $json.advisoryKeys }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Package Information",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        480,
+        60
+      ],
+      "id": "e47fe3bb-7e9a-4517-8762-bb48aebb712c"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.deps.dev/v3/systems/{{ \n  $json.component.split(':')[1].split('/')[0] }}/packages/{{ \n  $json.component.split(':')[1].split('/').slice(-1)[0].split('@')[0] }}/versions/{{ \n  $json.component.split(':')[1].split('/').slice(-1)[0].split('@')[1] }}",
+        "options": {
+          "batchSize": 10
+        }
+      },
+      "name": "Check DevsDev API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        300,
+        60
+      ],
+      "id": "2c3d981e-3c12-4ab6-b79e-59be4012044f"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "component": "pkg:npm/archiver-utils@1.3.0"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Check DevsDev API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Package Information": {
+      "main": [
+        []
+      ]
+    },
+    "Check DevsDev API": {
+      "main": [
+        [
+          {
+            "node": "Extract Package Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f670b3af-54a5-4c20-9b67-ab32a7f7f659",
+  "meta": {
+    "instanceId": "648ce3958fa375e0dcd9ae1e34a268ad529199132fbae8240bc2efae838174cc"
+  },
+  "id": "hoFowPMWyG07GPLe",
+  "tags": [
+    {
+      "createdAt": "2025-03-22T01:16:35.441Z",
+      "updatedAt": "2025-03-22T01:16:35.441Z",
+      "id": "5E9PNj2vFd0ezQJ8",
+      "name": "SBOM"
+    },
+    {
+      "createdAt": "2025-03-21T00:00:25.199Z",
+      "updatedAt": "2025-03-22T01:23:02.371Z",
+      "id": "mQ8nQvSDz9fmP9ts",
+      "name": "Production❗"
+    },
+    {
+      "createdAt": "2025-03-22T01:20:57.608Z",
+      "updatedAt": "2025-03-22T01:20:57.608Z",
+      "id": "owCdUsrTwRaLKnOr",
+      "name": "SubWorkflow"
+    }
+  ]
+}

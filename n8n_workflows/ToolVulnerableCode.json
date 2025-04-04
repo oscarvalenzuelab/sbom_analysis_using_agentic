@@ -1,0 +1,159 @@
+{
+  "name": "ToolVulnerableCode",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "component"
+            }
+          ]
+        }
+      },
+      "id": "17ceb352-a64d-4e59-a354-dbd3d3cc598c",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        100,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Query VulnerableCode",
+        "height": 240,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        0
+      ],
+      "id": "2681ef67-b3b7-4d53-a122-99220a45ccc5",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "purl",
+              "value": "={{ $('When Executed by Another Workflow').item.json.component }}"
+            },
+            {
+              "name": "vulnerabilities",
+              "value": "={{ $json.data[0].affected_by_vulnerabilities }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Package Information",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        480,
+        60
+      ],
+      "id": "8abbb1df-1b5a-41b9-bd84-684e5128d765"
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=https://public.vulnerablecode.io/api/v2/packages/lookup/",
+        "responseFormat": "string",
+        "options": {
+          "batchSize": 10
+        },
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "purl",
+              "value": "={{ $json.component }}"
+            }
+          ]
+        }
+      },
+      "name": "Check VulnerableCode",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        300,
+        60
+      ],
+      "id": "56161913-744d-4d32-bfd1-0c042551976c",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OUaMitEwkpYfEUmh",
+          "name": "VulnerableCode Token Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Check VulnerableCode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Package Information": {
+      "main": [
+        []
+      ]
+    },
+    "Check VulnerableCode": {
+      "main": [
+        [
+          {
+            "node": "Extract Package Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f8ca5b8-8c56-4f69-8108-b6967b4f1044",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "648ce3958fa375e0dcd9ae1e34a268ad529199132fbae8240bc2efae838174cc"
+  },
+  "id": "e1lgLdZt6Z7eEn2P",
+  "tags": [
+    {
+      "createdAt": "2025-03-22T01:16:35.441Z",
+      "updatedAt": "2025-03-22T01:16:35.441Z",
+      "id": "5E9PNj2vFd0ezQJ8",
+      "name": "SBOM"
+    },
+    {
+      "createdAt": "2025-03-21T00:00:25.199Z",
+      "updatedAt": "2025-03-22T01:23:02.371Z",
+      "id": "mQ8nQvSDz9fmP9ts",
+      "name": "Production❗"
+    },
+    {
+      "createdAt": "2025-03-22T01:20:57.608Z",
+      "updatedAt": "2025-03-22T01:20:57.608Z",
+      "id": "owCdUsrTwRaLKnOr",
+      "name": "SubWorkflow"
+    }
+  ]
+}

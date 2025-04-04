@@ -1,0 +1,287 @@
+{
+  "name": "GitHub and ScoreCard",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -660,
+        -280
+      ],
+      "id": "64ff2571-3ba3-4bed-9683-3f30a44ae50e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "repository",
+        "operation": "getLicense",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.output.github_organization }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.output.github_project }}",
+          "mode": "name"
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -180
+      ],
+      "id": "4029932b-1cea-41df-92fc-5758f5e92c95",
+      "name": "GitHub",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "eI0S2hvd4vx04fRF",
+          "name": "GitHub oscar.valenzuela.b@ AInvirion"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract the GitHub information from the provided PURL. If the PURL doesn't contain an specific commit hash id, then obtain the latest commit from the GitHub repository. Obtain the License from the GitHub repository, if no license, respond with \"NOASSERTION\". Obtain the ScoreCard for the project, and provide the output as final JSON for risk representation.\n\n {{ $json.purl }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a OpenSSF helper, your mission is to identify license, and security scorecard for Open Source projects on GitHub.\n\n## Tools\n* GetScorecard: Obtains ScoreCard Score for an specific GitHub Project.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -440,
+        -280
+      ],
+      "id": "f99d2304-636b-4dd4-a509-6e4e83b4063d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -540,
+        -40
+      ],
+      "id": "8be3a674-5b7a-4d34-8412-75ad10c738b6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "JtMtleyTAnnQAMwQ",
+          "name": "OpenAi account - oscar.valenzuela.b@"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get ScoreCard information for any GitHub project.",
+        "url": "=https://api.securityscorecards.dev/projects/github.com/{repository_name}/{project_name}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "repository_name",
+              "description": "GitHub Repository Name",
+              "type": "string"
+            },
+            {
+              "name": "project_name",
+              "description": "The Github Project Name to Review",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -340,
+        20
+      ],
+      "id": "998a77ef-765a-41d6-b190-677a1add6750",
+      "name": "GetScorecard"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"purl\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"github_repository_url\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"github_organization\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"github_project\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"last_commit\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"scorecard_score\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        20
+      ],
+      "id": "f604efb1-bbd8-4790-a767-a81871e09fbb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        60,
+        -260
+      ],
+      "id": "e2e106b5-49e8-40f7-9da8-e5cdbb61c732",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e587ac5-ed72-446a-bab9-803221027cfb",
+              "name": "spdx_id",
+              "value": "={{ $json.license.spdx_id }}",
+              "type": "string"
+            },
+            {
+              "id": "254691aa-7ef7-40af-841f-29a55e53507f",
+              "name": "purl",
+              "value": "={{ $json.output.purl }}",
+              "type": "string"
+            },
+            {
+              "id": "f54f364e-4316-41e2-9f47-f98eddc36fd2",
+              "name": "scorecard",
+              "value": "={{ $json.output.scorecard_score }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        -260
+      ],
+      "id": "676b6cc4-ac94-4a0f-9b7b-0e7fe3719779",
+      "name": "ExcludeFields"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "purl": "pkg:github/ossf/scorecard"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetScorecard": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "GitHub",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "ExcludeFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a4ad1b63-35e9-4884-9802-a0a94589f846",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "648ce3958fa375e0dcd9ae1e34a268ad529199132fbae8240bc2efae838174cc"
+  },
+  "id": "JqCBuulxnAeBs5MH",
+  "tags": []
+}

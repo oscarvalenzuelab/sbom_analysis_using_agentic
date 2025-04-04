@@ -1,0 +1,149 @@
+{
+  "name": "ToolClearlyDefined",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "component"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        100,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Query ClearlyDefined",
+        "height": 240,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        0
+      ],
+      "id": "7620dd44-03e8-43b9-948e-e52e08c1b6da",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "license",
+              "value": "={{ $json.licensed.declared }}"
+            },
+            {
+              "name": "copyright",
+              "value": "={{ $json.licensed.facets.core.attribution }}"
+            },
+            {
+              "name": "file_hashes",
+              "value": "={{ $json.described.hashes }}"
+            },
+            {
+              "name": "purl",
+              "value": "={{ $('When Executed by Another Workflow').item.json.component }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Package Information",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        480,
+        60
+      ],
+      "id": "c29b6033-dbaa-4f6a-b448-bd4f29248a67"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.clearlydefined.io/definitions/{{ \n  $json.component.split(':')[1].split('/')[0] }}/{{ \n  {'npm': 'npmjs', 'maven': 'mavencentral'}[$json.component.split(':')[1].split('/')[0]] || \n  $json.component.split(':')[1].split('/')[0] }}/{{ \n  $json.component.split(':')[1].split('/').length > 2 ? \n  $json.component.split(':')[1].split('/').slice(1, -1).join('/') + '/' : '-' }}/{{ \n  $json.component.split(':')[1].split('/').slice(-1)[0].split('@')[0] }}/{{ \n  $json.component.split(':')[1].split('/').slice(-1)[0].split('@')[1] }}/",
+        "options": {
+          "batchSize": 10
+        }
+      },
+      "name": "Check Clearly Defined",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        300,
+        60
+      ],
+      "id": "c0329ad3-6400-4e35-849d-053ba33ee94e"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Check Clearly Defined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Package Information": {
+      "main": [
+        []
+      ]
+    },
+    "Check Clearly Defined": {
+      "main": [
+        [
+          {
+            "node": "Extract Package Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "43a75c8b-5409-45f3-9c93-0b707bc83b84",
+  "meta": {
+    "instanceId": "648ce3958fa375e0dcd9ae1e34a268ad529199132fbae8240bc2efae838174cc"
+  },
+  "id": "VAbV00Ys6fl7hJMU",
+  "tags": [
+    {
+      "createdAt": "2025-03-22T01:16:35.441Z",
+      "updatedAt": "2025-03-22T01:16:35.441Z",
+      "id": "5E9PNj2vFd0ezQJ8",
+      "name": "SBOM"
+    },
+    {
+      "createdAt": "2025-03-21T00:00:25.199Z",
+      "updatedAt": "2025-03-22T01:23:02.371Z",
+      "id": "mQ8nQvSDz9fmP9ts",
+      "name": "Production❗"
+    },
+    {
+      "createdAt": "2025-03-22T01:20:57.608Z",
+      "updatedAt": "2025-03-22T01:20:57.608Z",
+      "id": "owCdUsrTwRaLKnOr",
+      "name": "SubWorkflow"
+    }
+  ]
+}
