@@ -19,8 +19,8 @@ This project is provided as a sample and learning resource. Please keep in mind:
 To respect the nature of the materials:
 
 * SBOM files and N8N workflow JSON files:
-** Licensed under MIT No Attribution (MIT-0)
-** You are free to use, copy, and adapt without attribution.
+	* Licensed under MIT No Attribution (MIT-0)
+	* You are free to use, copy, and adapt without attribution.
 
 * Slides and written commentary:
 ** Licensed under Creative Commons Attribution-NoDerivatives 4.0 (CC BY-ND 4.0)
