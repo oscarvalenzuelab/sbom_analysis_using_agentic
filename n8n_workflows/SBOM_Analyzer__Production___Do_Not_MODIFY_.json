@@ -1,0 +1,704 @@
+{
+  "name": "SBOM Analyzer (Production - Do Not MODIFY)",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 1,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "229200d1-ec13-4970-ae0e-2c8e17da0bdf",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "leftValue": "={{ $('Gmail Trigger').item.json.headers['content-type'] }}",
+              "rightValue": "multipart/mixed"
+            },
+            {
+              "id": "new-condition",
+              "operator": {
+                "type": "boolean",
+                "operation": "isNotEmpty"
+              },
+              "leftValue": "={{ $json.attachments }}"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "eff2ff76-8280-4af7-9ca5-a3f4d4fe7b16",
+      "name": "Only mails with attachments",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1400,
+        -2260
+      ],
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "binaryPropertyName": "attachment_0",
+        "destinationKey": "jsonData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1000,
+        -2460
+      ],
+      "id": "cc8317c7-1f88-48ce-8d24-0e0b061e6cf9",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $binary.values()[0].fileExtension }}",
+                    "rightValue": "json",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e3cd944f-78ca-4c21-932b-fc6e1bbddd16"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a1d75c22-0cd0-4b47-ba73-811afd0f5d18",
+                    "leftValue": "={{ $binary.values()[0].fileExtension }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1200,
+        -2400
+      ],
+      "id": "771292d4-4b70-41cb-aad3-751c48898239",
+      "name": "Only if file is JSON"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "=The system only accepts emails with JSON file attachments. Please resend your email and be sure to include the attachment this time. ;)",
+        "options": {
+          "replyToSenderOnly": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1000,
+        -2240
+      ],
+      "id": "5a208bc7-0700-4723-b46a-78bbc88e5150",
+      "name": "Send Reply with NOT Attachment File",
+      "webhookId": "6edb5c4c-16e2-4cb2-bdb4-7e840a91534d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "GMAIL@"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "readStatus": "unread"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "id": "29f90cd5-0254-41c3-b000-4dfcb40a6095",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        -1660,
+        -2420
+      ],
+      "typeVersion": 1.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "GMAIL@"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Email Verification and Handler",
+        "height": 480,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1480,
+        -2520
+      ],
+      "id": "cfe506e7-3b23-4485-869a-110d5d9ef20d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "SBOM JSON to PURLs",
+        "height": 360,
+        "width": 380,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -2520
+      ],
+      "id": "85aaeb44-0f53-4a79-bbf3-a4cfed640d81",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "name": "ClearlyDefined",
+        "description": "Call this tool to obtain License information from a package by using Clearly Defined API.",
+        "workflowId": {
+          "__rl": true,
+          "value": "VAbV00Ys6fl7hJMU",
+          "mode": "list",
+          "cachedResultName": "AInvirion — ToolClearlyDefined"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "component": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('component', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "component"
+          ],
+          "schema": [
+            {
+              "id": "component",
+              "displayName": "component",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -2200
+      ],
+      "id": "3318b1da-4f81-4204-bb39-e996ebb6a802",
+      "name": "ClearlyDefined"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=From the JSON text provided below, please extract the list of PURLs, license information, and file hashes when that data are present.\n{{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -660,
+        -2460
+      ],
+      "id": "6ed37a61-0d4c-41e5-b7aa-30c50d1e4f2a",
+      "name": "AI Smart Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=For the project infomration provided below, it is expected that for each package, you provide PURL, license identification using SPDX ID, security information (file hashes and the number of vulnerabilities), and the name of the authors.\n{{ $json.output }}",
+        "options": {
+          "systemMessage": "You are an AI agent that uses tools to collect license and security information about Open Source packages.\n\n## Tools\n* ClearlyDefined: Provide license, file hashes, and copyright notices (author's name) for an Open Source package (PURL).\n* VulnerableCode: Provide vulnerability reports for an Open Source package (PURL).\n* DevsDev: Provide vulnerability and License information for an Open Source package (PURL).\n\n## Rules\n* You don't need to call DevsDev if you already have a license and vulnerabilities from VulneraCode."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -200,
+        -2460
+      ],
+      "id": "f19f9269-4be3-4c2c-a770-0d056d3b2cc8",
+      "name": "AI Agent Tools"
+    },
+    {
+      "parameters": {
+        "content": "Compliance Tooling",
+        "height": 460,
+        "width": 460,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -2520
+      ],
+      "id": "8e4dc9e8-2f32-43a7-a664-1b0080e413c7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Processing Brain",
+        "height": 460,
+        "width": 840,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -2520
+      ],
+      "id": "5c218d57-a10e-4d84-a49f-fa8e9bea6167",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "name": "VulnerableCode",
+        "description": "Call this tool to verify if a component has security vulnerabilities (like CVE) using VulnerableCode API.",
+        "workflowId": {
+          "__rl": true,
+          "value": "e1lgLdZt6Z7eEn2P",
+          "mode": "list",
+          "cachedResultName": "AInvirion — ToolVulnerableCode"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "component": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('component', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "component"
+          ],
+          "schema": [
+            {
+              "id": "component",
+              "displayName": "component",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -2200
+      ],
+      "id": "bea67eba-5e85-488b-b2f2-12f47ad73f51",
+      "name": "VulnerableCode"
+    },
+    {
+      "parameters": {
+        "name": "DevsDev",
+        "description": "Call this tool to obtain license and vulnerability information from DevsDev.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hoFowPMWyG07GPLe",
+          "mode": "list",
+          "cachedResultName": "AInvirion — ToolDevsDev"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "component": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('component', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "component"
+          ],
+          "schema": [
+            {
+              "id": "component",
+              "displayName": "component",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        -2240
+      ],
+      "id": "b1b16d00-e3b1-431a-9412-6786b7c92a09",
+      "name": "DevsDev"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=From the list of OSS components provided below, including license tags and copyright statement, I want you to generate a risk assessment considering the software will be distributed.\n\n{{ $json.output }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert Open Source Compliance Engineer who reviews license and security information for projects based on what OSS packages are used. You assess risks based on the licenses, license type (copyleft, weak-copyleft, and permissive) and the number of vulnerabilities associated with each package.\n\nThe output of your assessment is an HTML report that includes:\n\n* A table (in HTML code) with the \"List of Packages\", the license, number of security vulnerabilities, and the risk assessment (high, medium, low) for each package considering both copyleft risks and vulnerabilities. The table must be in simple HTML format.\n\n* A risk summary of the risks for the whole project considering the product as distributed (externalized) to customers. The summary should be writen in a simple narrative.\n\n* A \"Legal Notices\" proposal document in plain TEXT format based on the list of packages. The legal notices should include package purls, license ID, and copyright names.\n\n* Conclusions\n\nKeep the \"List of Packages\" table encoded as HTML format, despite the final output."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        400,
+        -2460
+      ],
+      "id": "f1a459c7-194d-4b68-9d75-f0c47459ebcf",
+      "name": "AI Compliance Engineer"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        -1860
+      ],
+      "id": "71264e47-4a6a-4e12-b2be-80f9d86e145f",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "REDACTED",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\"type\": \"object\",\n\"properties\": {\n\"risk_assessment\": {\n\"type\": \"string\",\n\"description\": \"A detailed assessment of the risk factors involved, HTML table.\"\n},\n\"risk_assessment_summary\": {\n\"type\": \"string\",\n\"description\": \"A concise summary of the key points from the risk assessment.\"\n},\n\"legal_notices\": {\n\"type\": \"string\",\n\"description\": \"Any relevant legal disclaimers, notices, or obligations.\"\n},\n\"conclusion\": {\n\"type\": \"string\",\n\"description\": \"A final statement summarizing the overall findings and next steps.\"\n}\n},\n\"required\": [\"risk_assessment\", \"risk_assessment_summary\", \"legal_notices\", \"conclusion\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        -2200
+      ],
+      "id": "7b253b34-45d6-4976-b2c9-529bffb90624",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output.legal_notices",
+        "binaryPropertyName": "attachment_0",
+        "options": {
+          "fileName": "legal_notices.txt"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        -2460
+      ],
+      "id": "82d765b0-ce9b-4342-b529-e476b13adf13",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "=<H1> Open Source Compliance Audit Review </h1>\n<h2>List of OSS packages</h2>\n{{ $('AI Compliance Engineer').item.json.output.risk_assessment }}\n\n<h2>Risk Assessment Summary </h2>\n{{ $('AI Compliance Engineer').item.json.output.risk_assessment_summary }}\n\n<h2>Conclusion</h2>\n{{ $('AI Compliance Engineer').item.json.output.conclusion }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "attachment_0"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -2460
+      ],
+      "id": "839112b7-0334-41e4-a784-af3136c20b40",
+      "name": "Gmail",
+      "webhookId": "68abd33f-205b-4189-b245-578c1e6622ae",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "GMAIL@"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Only mails with attachments": {
+      "main": [
+        [
+          {
+            "node": "Only if file is JSON",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reply with NOT Attachment File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Smart Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only if file is JSON": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reply with NOT Attachment File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Only mails with attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClearlyDefined": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Smart Parser": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Tools",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Tools": {
+      "main": [
+        [
+          {
+            "node": "AI Compliance Engineer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VulnerableCode": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DevsDev": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Smart Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent Tools",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Compliance Engineer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Compliance Engineer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Compliance Engineer": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e5a45ec3-215b-4a99-a4d0-4a9b162fd718",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "648ce3958fa375e0dcd9ae1e34a268ad529199132fbae8240bc2efae838174cc"
+  },
+  "id": "dfHjrLVU2WY2wcZj",
+  "tags": [
+    {
+      "createdAt": "2025-03-22T01:16:35.441Z",
+      "updatedAt": "2025-03-22T01:16:35.441Z",
+      "id": "5E9PNj2vFd0ezQJ8",
+      "name": "SBOM"
+    },
+    {
+      "createdAt": "2025-03-21T00:00:25.199Z",
+      "updatedAt": "2025-03-22T01:23:02.371Z",
+      "id": "mQ8nQvSDz9fmP9ts",
+      "name": "Production❗"
+    }
+  ]
+}

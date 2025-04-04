@@ -40,8 +40,8 @@
       "name": "GitHub",
       "credentials": {
         "githubOAuth2Api": {
-          "id": "eI0S2hvd4vx04fRF",
-          "name": "GitHub oscar.valenzuela.b@ AInvirion"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -82,8 +82,8 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "JtMtleyTAnnQAMwQ",
-          "name": "OpenAi account - oscar.valenzuela.b@"
+          "id": "REDACTED",
+          "name": "OpenAi account"
         }
       }
     },
