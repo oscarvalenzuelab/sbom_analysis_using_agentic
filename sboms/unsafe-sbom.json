@@ -1,0 +1,73 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:123e4567-e89b-12d3-a456-426614174000",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-03-19T12:00:00Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "CycloneDX Generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "Example App",
+      "version": "1.0.0",
+      "purl": "pkg:npm/example-app@1.0.0",
+      "licenses": [
+        {
+          "id": "MIT"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "gpl-2.0-licensed",
+      "version": "1.0.0",
+      "purl": "pkg:npm/gpl-2.0-licensed@1.0.0",
+      "licenses": [
+        {
+          "id": "GPL-2.0"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "lodash",
+      "version": "0.2.0",
+      "purl": "pkg:npm/lodash@0.2.0",
+      "licenses": [
+        {
+          "id": "MIT"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "express",
+      "version": "4.18.2",
+      "purl": "pkg:npm/express@4.18.2",
+      "licenses": [
+        {
+          "id": "MIT"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "react",
+      "version": "18.2.0",
+      "purl": "pkg:npm/react@18.2.0",
+      "licenses": [
+        {
+          "id": "MIT"
+        }
+      ]
+    }
+  ]
+}
