@@ -28,8 +28,8 @@
     {
       "type": "library",
       "name": "lodash",
-      "version": "4.17.21",
-      "purl": "pkg:npm/lodash@4.17.21",
+      "version": "4.17.9",
+      "purl": "pkg:npm/lodash@4.17.9",
       "licenses": [
         {
           "id": "MIT"
